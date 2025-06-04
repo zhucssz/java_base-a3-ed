@@ -22,12 +22,12 @@ public class SistemaImpressao {
                     sc.nextLine(); // odeio o buffer do scanner me mata
                     
                     if (opcao < 0 || opcao > 3) {
-                        System.out.print("| [!] Opção inválida!\n");
+                        System.out.print("\n| [!] Opção inválida!\n\n");
                         continue;
                     }
                     break;
                 } else {
-                    System.out.print("| [!] Por favor, digite um número válido.\n");
+                    System.out.print("\n| [!] Por favor, digite um número válido.\n\n");
                     sc.next();
                 }
             } while (true);
