@@ -9,19 +9,20 @@ public class SistemaImpressao {
             int opcao;
 
             do {
-                System.out.print("|-------------<<<|MENU|>>>-------------|\n");
-                System.out.print("| Opção 1 - Enviar documento           |\n");
-                System.out.print("| Opção 2 - Ver fila de impressão      |\n");
-                System.out.print("| Opção 3 - Imprimir próximo documento |\n");
-                System.out.print("| Opção 0 - Encerrar programa     <<<--|\n");
-                System.out.print("|---------------------->>>\n");
-                System.out.print("|-------->>> [i] Digite uma opção: ");
+                System.out.print("|----------------<<<|MENU|>>>----------------|\n");
+                System.out.print("| Opção 1 - Enviar documento normal          |\n");
+                System.out.print("| Opção 2 - Enviar documento com prioridade  |\n");
+                System.out.print("| Opção 3 - Ver fila de impressão            |\n");
+                System.out.print("| Opção 4 - Imprimir próximo documento       |\n");
+                System.out.print("| Opção 0 - Encerrar programa        <<<-----|\n");
+                System.out.print("|--------------------------->>>\n");
+                System.out.print("|----->>> [i] Digite uma opção: ");
 
                 if (sc.hasNextInt()) {
                     opcao = sc.nextInt();
                     sc.nextLine(); // odeio o buffer do scanner me mata
                     
-                    if (opcao < 0 || opcao > 3) {
+                    if (opcao < 0 || opcao > 4) {
                         System.out.print("\n| [!] Opção inválida!\n\n");
                         continue;
                     }
@@ -33,32 +34,42 @@ public class SistemaImpressao {
             } while (true);
 
             switch (opcao) {
-                case 1 -> {
+                case 2 -> {
                     String nome;
                     do {
                         System.out.print("\n| [i] Nome do documento: ");
-                        nome = sc.nextLine();
+                        nome = sc.nextLine().trim();
+
+                        if (nome.isEmpty()) {
+                            System.out.println("| [!] O nome do documento não pode estar vazio.");
+                            continue;
+                        }
 
                         System.out.print(String.format("| [i] Confirmar o nome do documento como [ %s ]? s/n: ", nome));
-                        String confirmacao = sc.nextLine();
+                        String confirmacao = sc.nextLine().trim();
 
-                        if (confirmacao.toLowerCase().charAt(0) == 's') {
+                        if (!confirmacao.isEmpty() && confirmacao.toLowerCase().charAt(0) == 's') {
                             break;
                         }
                     } while (true);
 
                     do {
-                        System.out.print("\n| [#] Quanto menor o número, mais prioridade ele tem!");
-                        System.out.print("\n| [i] Prioridade do documento: ");
+                        System.out.print("\n| [#] Quanto menor o número, maior a prioridade(1 é o mais prioritário, enquanto 5 é o menos prioritário)!");
+                        System.out.print("\n| [i] Prioridade do documento[1 a 5]: ");
 
                         if (sc.hasNextInt()) {
                             int prioridade = sc.nextInt();
                             sc.nextLine(); 
 
+                            if(prioridade > 6 || prioridade < 1) {
+                                System.out.print("| [!] Por favor, use um valor numérico de 1 a 5!\n");
+                                continue;
+                            }
+
                             System.out.print(String.format("| [i] Confirmar o valor da prioridade como [ %d ]? s/n: ", prioridade));
                             String confirmacao = sc.nextLine();
 
-                            if (confirmacao.toLowerCase().charAt(0) == 's') {
+                            if (!confirmacao.isEmpty() && confirmacao.toLowerCase().charAt(0) == 's') {
                                 fila.inserir(new Documento(nome, prioridade));
                                 break;
                             }
@@ -70,17 +81,55 @@ public class SistemaImpressao {
 
                     System.out.println("\n| [+] Documento adicionado!\n");
                 }
-                case 2 -> {
+                case 1 -> {
+                    String nome;
+                    do {
+                        System.out.print("\n| [i] Nome do documento: ");
+                        nome = sc.nextLine().trim();
+
+                        if (nome.isEmpty()) {
+                            System.out.println("| [!] O nome do documento não pode estar vazio!");
+                            continue;
+                        }
+
+                        System.out.print(String.format("| [i] Confirmar o nome do documento como [ %s ]? s/n: ", nome));
+                        String confirmacao = sc.nextLine().trim();
+
+                        if (!confirmacao.isEmpty() || confirmacao.toLowerCase().charAt(0) == 's') {
+                            break;
+                        }
+                    } while (true);
+
+                    fila.inserir(new Documento(nome, 6)); // insere o documento com prioridade 6 (normal)
+
+                    System.out.println("\n| [+] Documento adicionado!\n");
+                }
+                case 3 -> {
                     System.out.println("\n| [#] FILA ATUAL: ");
                     fila.exibirFila();
                 }
-                case 3 -> {
-                    Documento doc = fila.remover();
+                case 4 -> {
+                    String nomeDocTopo = fila.retornarTopo();
+                    if (nomeDocTopo.equals("vazia")) {
+                        System.out.println("\n| [!] Nenhum documento na fila! \n");
+                        break;
+                    }
+
+                    System.out.print(String.format("\n| [i] Imprimir o próximo documento na fila [ %s ]? s/n: ", nomeDocTopo));
+                    String confirmacao = sc.nextLine().trim();
+
+                    if (confirmacao.isEmpty() || confirmacao.toLowerCase().charAt(0) != 's') {
+                        System.out.println("");
+                        break;
+                    }
+
+                    Documento doc = fila.remover(); 
 
                     if (doc == null) {
                         System.out.println("\n| [!] Nenhum documento na fila! \n");
                     } else {
-                        System.out.println(String.format("\n| [-] Imprimindo documento: %s...\n", doc));
+                        String prioridadeStr = (doc.prioridade > 5) ? "Normal" : String.valueOf(doc.prioridade);
+                        System.out.println(String.format("\n| [-] Imprimindo documento[^%s]: %s...\n", prioridadeStr, doc.nome));
                     }
                 }
                 case 0 -> {

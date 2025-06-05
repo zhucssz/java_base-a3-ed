@@ -1,6 +1,7 @@
 class Documento {
     String nome;
     int prioridade;
+    int ordemChegada;
 
     public Documento(String nome, int prioridade) {
         this.nome = nome;
